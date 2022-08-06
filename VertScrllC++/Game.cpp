@@ -44,26 +44,17 @@ void Game::DrawArea()
 
 				if (0 != dwResourceSize)
 				{
-					int row = ROWS * 30, col = 0;
-					for (int i = COLS * (ROWS * 30); i > 0; i--) {
+					int row = 0, col = 0;
+					for (int i = 0; i < strnlen(area, COLS * (ROWS * 20)); i++) {
 						GameMap[row][col] = area[i];
-						if (i == 0 && i < COLS * (ROWS * 30)) {
-							row--;
+						if (i % COLS == 0 && i > 0) {
+							row++;
 							col = 0;
 						}
 						col++;
 					}
 				}
 			}
-		}
-	}
-
-	for (int h = 0; h < ROWS; h++)
-	{
-		for (int w = 0; w < COLS; w++)
-		{
-			cout << GameMap[h][w];
-			activeAreaBuf[h][w] = GameMap[h][w];
 		}
 	}
 
@@ -232,8 +223,7 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(pause); }
 	);
 
-	int tick = 0;
-	int scrollSpeed = 2;
+	int scrollY = ROWS * 20, scrollSpeed = 2, tick = 0;
 
 	while (worldIsRun) {
 
@@ -259,7 +249,7 @@ void Game::RunWorld(bool& restart)
 
 		DrawChanges();
 
-		if (tick % scrollSpeed == 0 && tick > 0) ScrollWindow();
+		if (tick % scrollSpeed == 0 && tick > 0) ScrollWindow(scrollY);
 
 		//DrawInfo(player);
 

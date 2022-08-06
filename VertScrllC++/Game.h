@@ -3,20 +3,18 @@
 
 class Game
 {
-public:
+private:
     wd wData;
 
     char16_t prevBuf[ROWS][COLS];
     char coord[100];
 
-    char GameMap[ROWS*30][COLS];
+    unsigned char GameMap[ROWS*20][COLS];
 
-    char prevActiveAreaBuf[ROWS][COLS];
-    char activeAreaBuf[ROWS][COLS];
+    unsigned char prevActiveAreaBuf[ROWS][COLS];
+    unsigned char activeAreaBuf[ROWS][COLS];
 
-    int scrollY = 0;
-
-    bool worldIsRun = true, win = false, alreadySpawn = false;
+    bool worldIsRun = true, win = false;
 
     int score = 0;
 
@@ -35,7 +33,7 @@ public:
 
         HWND hWindowConsole = GetForegroundWindow();
 
-        int Width = 90, Height = 56, err = 30;
+        int Width = 91, Height = 56, err = 30;
 
         bool Terminal() {
 
@@ -126,7 +124,7 @@ public:
         }
     };
 
-    void ScrollWindow() {
+    void ScrollWindow(int& scrollY) {
 
         for (int i = 0; i < ROWS; i++)
         {
@@ -136,40 +134,39 @@ public:
             }
         }
 
-        for (int i = scrollY; i < scrollY + ROWS; i++)
+
+        int activeY = ROWS - 1;
+        for (int i = scrollY - 1; i >= scrollY - ROWS; i--)
         {
-            int activeY = 0;
             for (int j = 0; j < COLS; j++)
             {
                 activeAreaBuf[activeY][j] = GameMap[i][j];
 
-                if (activeAreaBuf[activeY][j] == '=') {
+                if (activeAreaBuf[activeY][j] == '#') {
                     wData.grid[activeY][j] = -1;
                 }
-
-                activeY++;
             }
+            activeY--;
         }
 
         for (int i = 0; i < ROWS; i++)
         {
             for (int j = 0; j < COLS; j++)
             {
-                if (i < 2 && i >= ROWS - 1) continue;
                 if ((prevActiveAreaBuf[i][j] != activeAreaBuf[i][j]) && (wData.vBuf[i][j] == 0 || wData.vBuf[i][j] == u' '))
                 {
                     prevActiveAreaBuf[i][j] = activeAreaBuf[i][j];
 
-                    SetPos(j, i + 1);
+                    SetPos(j + 1, i);
 
                     cout << prevActiveAreaBuf[i][j];
                 }
             }
         }
 
- /*       if (scrollX + COLS < 1023) scrollX++;
+        if (scrollY - ROWS > 0) scrollY--;
 
-        if (scrollX % 120 == 0 && scrollX > 0) {
+        /* if (scrollX % 120 == 0 && scrollX > 0) {
             SpawnEnemy(COLS - 10, 3 + rand() % (ROWS - 6), REGULAR);
         }
         if (scrollX % 50 == 0 && scrollX > 0) {
