@@ -167,24 +167,32 @@ void Game::DrawChanges()
 	}
 }
 
+void Game::SpawnEnemy(int x, int y, int type)
+{
+	enemy = new Enemy(&wData, x, y, 2, BrYellow);
+	enemy->SetEnemyType(type);
+	allObjectList.push_back(enemy);
+	enemyList.push_back(enemy);
+}
+
 void Game::DrawToMem()
 {
-	//for (int i = 0; i < enemyList.size(); i++)
-	//{
-	//	if (enemyList[i]->IsObjectDelete()) {
-	//		enemyList.erase(enemyList.begin() + i);
-	//		i = -1;
-	//	}
-	//}
+	for (int i = 0; i < enemyList.size(); i++)
+	{
+		if (enemyList[i]->IsObjectDelete()) {
+			enemyList.erase(enemyList.begin() + i);
+			i = -1;
+		}
+	}
 
-	//for (int i = 0; i < bulletList.size(); i++)
-	//{
-	//	if (bulletList[i]->IsObjectDelete()) {
-	//		bulletList.erase(bulletList.begin() + i);
+	for (int i = 0; i < bulletList.size(); i++)
+	{
+		if (bulletList[i]->IsObjectDelete()) {
+			bulletList.erase(bulletList.begin() + i);
 
-	//		i = -1;
-	//	}
-	//}
+			i = -1;
+		}
+	}
 
 	//for (int i = 0; i < bonusList.size(); i++)
 	//{
@@ -195,7 +203,7 @@ void Game::DrawToMem()
 	//	}
 	//}
 
-	/*for (int i = 0; i < allObjectList.size(); i++)
+	for (int i = 0; i < allObjectList.size(); i++)
 	{
 		if (allObjectList[i]->IsObjectDelete()) {
 			wData.vBuf[allObjectList[i]->GetY()][allObjectList[i]->GetX()] = u' ';
@@ -208,7 +216,79 @@ void Game::DrawToMem()
 	for (int i = 0; i < allObjectList.size(); i++)
 	{
 		allObjectList[i]->DrawObject();
-	}*/
+	}
+}
+
+void Game::Shot(int owner, Character* character)
+{
+	if (character->GetGunType() == SHOT) {
+		if (owner == PLAYER) {
+			bullet = new Bullet(&wData, character->GetX() + character->GetWidth() / 2, character->GetY() - 1, 1, Red);
+			bullet->SetOwner(owner);
+			bulletList.push_back(bullet);
+			allObjectList.push_back(bullet);
+		}
+		else if (owner == ENEMY) {
+			bullet = new Bullet(&wData, character->GetX() + character->GetWidth() / 2, character->GetY() + character->GetHeight() + 1, 1, Red);
+			bullet->SetOwner(owner);
+			bulletList.push_back(bullet);
+			allObjectList.push_back(bullet);
+		}
+	}
+	else if (character->GetGunType() == DOUBLESHOT) {
+		for (int i = 0; i < 2; i++)
+		{
+			if (i == 0) {
+				if (owner == PLAYER) {
+					bullet = new Bullet(&wData, character->GetX() + character->GetWidth() - 1, character->GetY() - 1, 1, Red);
+					bullet->SetOwner(owner);
+					bulletList.push_back(bullet);
+					allObjectList.push_back(bullet);
+				}
+				else {
+					bullet = new Bullet(&wData, character->GetX(), character->GetY() + character->GetHeight() + 1, 1, Red);
+					bullet->SetOwner(owner);
+					bulletList.push_back(bullet);
+					allObjectList.push_back(bullet);
+				}
+
+			}
+			else {
+				if (owner == PLAYER) {
+					bullet = new Bullet(&wData, character->GetX(), character->GetY() - 1, 1, Red);
+					bullet->SetOwner(owner);
+					bulletList.push_back(bullet);
+					allObjectList.push_back(bullet);
+				}
+				else {
+					bullet = new Bullet(&wData, character->GetX() + character->GetWidth(), character->GetY() + character->GetHeight() + 1, 1, Red);
+					bullet->SetOwner(owner);
+					bulletList.push_back(bullet);
+					allObjectList.push_back(bullet);
+				}
+
+			}
+		}
+	}
+	else if (character->GetGunType() == ROCKET) {
+		if (owner == PLAYER) {
+			bullet = new Bullet(&wData, character->GetX() + character->GetWidth() / 2, character->GetY() - 1, 1, Red);
+			bullet->SetOwner(owner);
+			bullet->SetBulletType(character->GetGunType());
+			bullet->RocketPath(15, 10);
+			bulletList.push_back(bullet);
+			allObjectList.push_back(bullet);
+		}
+		else {
+			bullet = new Bullet(&wData, character->GetX() + character->GetWidth() / 2, character->GetY() - 1, 1, Red);
+			bullet->SetOwner(owner);
+			bullet->SetBulletType(character->GetGunType());
+			bullet->RocketPath(player->GetX(), player->GetY());
+			bulletList.push_back(bullet);
+			allObjectList.push_back(bullet);
+		}
+	}
+	//PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
 }
 
 void Game::RunWorld(bool& restart)
@@ -224,6 +304,11 @@ void Game::RunWorld(bool& restart)
 	);
 
 	int scrollY = ROWS * 20, scrollSpeed = 2, tick = 0;
+
+	player = new Player(&wData, COLS / 2, ROWS - 15, 2, BrBlue);
+	allObjectList.push_back(player);
+
+	SpawnEnemy(5, 5, SMALL);
 
 	while (worldIsRun) {
 
@@ -241,6 +326,43 @@ void Game::RunWorld(bool& restart)
 
 		}
 
+		if (tick % player->GetSpeed() == 0) {
+			player->MoveObject();
+			if (GetAsyncKeyState(VK_SPACE) && player->GetGunState()) {
+				Shot(PLAYER, player);
+				thread reloadGun([&]
+					{ player->ReloadGun(); }
+				);
+				reloadGun.detach();
+			}
+		}
+		
+		for (int i = 0; i < enemyList.size(); i++)
+		{
+			if (tick % enemyList[i]->GetSpeed() == 0) {
+				enemyList[i]->MoveObject();
+
+				if (enemyList[i]->GetGunState()) {
+					enemy = enemyList[i];
+					Shot(ENEMY, enemy);
+					thread reloadGun([&]
+						{ enemy->ReloadGun(); }
+					);
+					reloadGun.detach();
+				}
+
+			}
+		}
+
+		for (int i = 0; i < bulletList.size(); i++)
+		{
+			if (tick % bulletList[i]->GetSpeed() == 0) {
+				bulletList[i]->MoveObject();
+			}
+		}
+		
+		
+
 		//Collision(player);
 
 		//WallCollision(player);
@@ -253,7 +375,7 @@ void Game::RunWorld(bool& restart)
 
 		//DrawInfo(player);
 
-		Sleep(10);
+		Sleep(20);
 
 		tick++;
 	}

@@ -1,1 +1,281 @@
 #include "GameObject.h"
+
+int GameObject::GetX()
+{
+    return _x;
+}
+
+int GameObject::GetY()
+{
+    return _y;
+}
+
+int GameObject::GetSpeed()
+{
+    return _speed;
+}
+
+int GameObject::GetWidth()
+{
+    return _width;
+}
+
+int GameObject::GetHeight()
+{
+    return _height;
+}
+
+void GameObject::SetX(int x)
+{
+    _x = x;
+}
+
+void GameObject::SetY(int y)
+{
+    _y = y;
+}
+
+void GameObject::DeleteObject()
+{
+    EraseObject();
+    _deleteObject = true;
+}
+
+bool GameObject::IsObjectDelete()
+{
+    return _deleteObject;
+}
+
+
+// ------------------ Char ------------------------
+
+
+int Character::GetGunSpeed()
+{
+    return _gunSpeed;
+}
+
+void Character::SetGunSpeed(int gunSpeed)
+{
+    _gunSpeed = gunSpeed;
+}
+
+void Character::SetGunType(int gunType)
+{
+    _gunType = gunType;
+}
+
+int Character::GetGunType()
+{
+    return _gunType;
+}
+
+void Character::SetGunState(bool reload)
+{
+    _reload = reload;
+}
+
+bool Character::GetGunState()
+{
+    return _reload;
+}
+
+void Character::ReloadGun()
+{
+    _reload = false;
+
+    Sleep(_gunSpeed);
+
+    _reload = true;
+}
+
+int Character::GetHp()
+{
+    return _hp;
+}
+
+// -------------------- Player --------------------
+
+void Player::DrawObject()
+{
+    for (int h = 0; h < _height; h++)
+    {
+        for (int w = 0; w < _width; w++)
+        {
+            wData->vBuf[_y + h][_x + w] = playerSprite[h][w] | (_color << 8);
+        }
+    }
+}
+
+void Player::EraseObject()
+{
+    for (int h = 0; h < _height; h++)
+    {
+        for (int w = 0; w < _width; w++)
+        {
+            wData->vBuf[_y + h][_x + w] = u' ';
+        }
+    }
+}
+
+void Player::MoveObject()
+{
+    EraseObject();
+
+    if (GetAsyncKeyState(VK_UP) && _y > 4) _y--;
+    else if (GetAsyncKeyState(VK_DOWN) && _y < ROWS - 4) _y++;
+    else if (GetAsyncKeyState(VK_RIGHT) && _x < COLS - 6) _x++;
+    else if (GetAsyncKeyState(VK_LEFT) && _x > 2) _x--;
+}
+
+void Player::Death(bool& worldIsRun)
+{
+    _hp -= 25;
+    if (_hp == 0) {
+        _lifes--;
+        if (_lifes == 0) {
+            worldIsRun = false;
+        }
+    }
+}
+
+int Player::GetLifes()
+{
+    return _lifes;
+}
+
+void Player::AddLife()
+{
+    if (_hp == 100) {
+        _lifes++;
+    }
+    else _hp += 25;
+}
+
+// ----------------- BULLET -----------------
+
+
+void Bullet::DrawObject()
+{
+    if (_type == ROCKET) {
+        wData->vBuf[_y][_x] = u'@' | (_color << 8);
+    }
+    else wData->vBuf[_y][_x] = u'|' | (_color << 8);
+}
+
+void Bullet::EraseObject()
+{
+    wData->vBuf[_y][_x] = u' ';
+}
+
+void Bullet::MoveObject()
+{
+    EraseObject();
+
+    if (!targetMove) {
+        if (_direction == UP) {
+            _y--;
+            if (_y <= 2) DeleteObject();
+        }
+        else if (_direction == DOWN) {
+            _y++;
+            if (_y >= ROWS - 1) DeleteObject();
+        }
+        else if (_direction == RIGHT) {
+            _x++;
+            if (_x >= COLS - 2) DeleteObject();
+        }
+        else if (_direction == LEFT) {
+            _x--;
+            if (_x <= 2) DeleteObject();
+        }
+    }
+    else {
+        if (!path.empty()) {
+            SetX(path.back().first);
+            SetY(path.back().second);
+
+            path.pop_back();
+
+            if (path.empty()) {
+                DeleteObject();
+            }
+        }
+    }
+}
+
+void Bullet::SetOwner(int owner)
+{
+    _owner = owner;
+
+    if (_owner == PLAYER) {
+        _direction = UP;
+    }
+    else if (_owner == ENEMY) {
+        _direction = DOWN;
+    }
+    else if (_owner == ENEMYLAND) {
+        if (_x < COLS / 2) {
+            _direction = RIGHT;
+        }
+        else _direction = LEFT;
+    }
+}
+
+void Bullet::SetBulletType(int type)
+{
+    _type = type;
+}
+
+void Bullet::RocketPath(int x, int y)
+{
+    int X = _x, Y = _y;
+
+    int dx = abs(x - X);
+    int dy = abs(y - Y);
+
+    int error = dx - dy;
+
+    int dirX = (X < x) ? 1 : -1;
+    int dirY = (Y < y) ? 1 : -1;
+
+    while (X != x && Y != y)
+    {
+        const int error2 = error * 2;
+
+        if (error2 > -dy)
+        {
+            error -= dy;
+            X += dirX;
+        }
+        if (error2 < dx)
+        {
+            error += dx;
+            Y += dirY;
+        }
+
+        path.insert(path.begin(), make_pair(X, Y));
+    }
+
+    targetMove = true;
+}
+
+int Bullet::GetOwner()
+{
+    return _owner;
+}
+
+
+
+// ------------------ ENEMY ------------------
+
+void Enemy::Hit()
+{
+    _hp -= 25;
+    if (_hp == 0) {
+        _lifes--;
+        if (_lifes == 0) {
+            DeleteObject();
+        }
+    }
+}

@@ -19,6 +19,13 @@ private:
     int score = 0;
 
     vector<GameObject*> allObjectList;
+    vector<Enemy*> enemyList;
+    vector<Bullet*> bulletList;
+
+    Player* player;
+    Bullet* bullet;
+    Enemy* enemy;
+
 
     HINSTANCE hInstance;
 
@@ -197,19 +204,15 @@ protected:
 
     void DrawEndInfo(bool& restart);
 
-    //void DrawInfo(Player* player);
+    void DrawInfo();
 
     void DrawChanges();
 
-    //void SpawnEnemy(int x, int y, int type);
+    void SpawnEnemy(int x, int y, int type);
 
     //void SpawnBonus(Enemy* enemy, int type);
 
-    //void ReloadGun(Player* player);
-
-    //void ReloadEnGun(Enemy* enemy);
-
-    //void Shot(int owner, GameObject* gmObj, Player* player);
+    void Shot(int owner, Character* character);
 
     //void Collision(Player* player);
 

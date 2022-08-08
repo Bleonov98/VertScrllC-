@@ -29,3 +29,29 @@ enum direction {
 	LEFT,
 	STOP
 };
+
+enum bulletOwner {
+	PLAYER,
+	ENEMY,
+	ENEMYLAND
+};
+
+enum gunType {
+	SHOT,
+	DOUBLESHOT,
+	ROCKET,
+	NONE
+};
+
+enum EnemyType {
+	SMALL,
+	REGULAR,
+	LAND,
+	BOSS
+};
+
+enum BonusType {
+	GUNSPEED,
+	GUNTYPE,
+	LIFE
+};
