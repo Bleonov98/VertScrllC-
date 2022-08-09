@@ -214,7 +214,7 @@ void Bullet::SetOwner(int owner)
     else if (_owner == ENEMY) {
         _direction = DOWN;
     }
-    else if (_owner == ENEMYLAND) {
+    else if (_owner == LAND) {
         if (_x < COLS / 2) {
             _direction = RIGHT;
         }
@@ -269,6 +269,62 @@ int Bullet::GetOwner()
 
 // ------------------ ENEMY ------------------
 
+void Enemy::DrawObject()
+{
+    if (_type == SMALL) {
+        for (int h = 0; h < _height; h++)
+        {
+            for (int w = 0; w < _width; w++)
+            {
+                wData->vBuf[_y + h][_x + w] = smallEnemy[h][w] | (_color << 8);
+            }
+        }
+    }
+    else if (_type == REGULAR) {
+        for (int h = 0; h < _height; h++)
+        {
+            for (int w = 0; w < _width; w++)
+            {
+                wData->vBuf[_y + h][_x + w] = regularEnemy[h][w] | (_color << 8);
+            }
+        }
+    }
+    else if (_type == LAND) {
+        for (int h = 0; h < _height; h++)
+        {
+            for (int w = 0; w < _width; w++)
+            {
+                wData->vBuf[_y + h][_x + w] = landEnemy[h][w] | (_color << 8);
+            }
+        }
+    }
+    else if (_type == BOSS) {
+        for (int h = 0; h < _height; h++)
+        {
+            for (int w = 0; w < _width; w++)
+            {
+                wData->vBuf[_y + h][_x + w] = bossEnemy[h][w] | (_color << 8);
+            }
+        }
+    }
+}
+
+void Enemy::EraseObject()
+{
+    for (int h = 0; h < _height; h++)
+    {
+        for (int w = 0; w < _width; w++)
+        {
+            wData->vBuf[_y + h][_x + w] = u' ';
+        }
+    }
+}
+
+void Enemy::MoveObject()
+{
+
+}
+
 void Enemy::Hit()
 {
     _hp -= 25;
@@ -278,4 +334,13 @@ void Enemy::Hit()
             DeleteObject();
         }
     }
+}
+
+void Enemy::SetEnemyType(int type)
+{
+}
+
+int Enemy::GetEnemyType()
+{
+    return _type;
 }

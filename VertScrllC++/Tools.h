@@ -32,8 +32,7 @@ enum direction {
 
 enum bulletOwner {
 	PLAYER,
-	ENEMY,
-	ENEMYLAND
+	ENEMY
 };
 
 enum gunType {

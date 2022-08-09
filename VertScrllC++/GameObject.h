@@ -5,7 +5,7 @@ static const int SMALL_WIDTH = 3;
 static const int REGULAR_HEIGHT = 3;
 static const int REGULAR_WIDTH = 5;
 static const int BOSS_HEIGHT = 10;
-static const int BOSS_WIDTH = 15;
+static const int BOSS_WIDTH = 16;
 
 
 class GameObject
@@ -163,9 +163,31 @@ private:
 	int _type = SMALL, _lifes = 1;
 
 	char16_t smallEnemy[REGULAR_HEIGHT][SMALL_WIDTH]{
-		u"''",
-		u"''",
+		u"--",
+		u"--",
 		u"##"
+	};
+	char16_t regularEnemy[REGULAR_HEIGHT][REGULAR_WIDTH]{
+		u"|^|",
+		u"|-|",
+		u"# #"
+	};
+	char16_t landEnemy[REGULAR_HEIGHT][REGULAR_WIDTH]{
+		u"   #",
+		u")###",
+		u"   #"
+	};
+	char16_t bossEnemy[BOSS_HEIGHT][BOSS_WIDTH]{
+		u" ------------- ",
+		u"| ====  ====  |",
+		u"| ----  ----  |",
+		u"|    ****     |",
+		u"|   *    *    |",
+		u"|    ****     |",
+		u"| # # # # # # |",
+		u"|-------------|",
+		u"||   | | |   ||",
+		u"||   | | |   ||"
 	};
 
 };
