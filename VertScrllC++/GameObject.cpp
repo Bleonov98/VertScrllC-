@@ -322,7 +322,17 @@ void Enemy::EraseObject()
 
 void Enemy::MoveObject()
 {
+    EraseObject();
 
+    if (_type == BOSS) {
+        BossDir();
+    }
+    else {
+        _y++;
+        if (_y + _height >= ROWS - 2) {
+            DeleteObject();
+        }
+    }
 }
 
 void Enemy::Hit()
@@ -338,9 +348,54 @@ void Enemy::Hit()
 
 void Enemy::SetEnemyType(int type)
 {
+    _type = type;
+
+    if (_type == SMALL) {
+        _width = SMALL_WIDTH - 1;
+        _height = REGULAR_HEIGHT;
+        _gunSpeed = 1500;
+        _gunType = SHOT;
+        _hp = 25;
+    }
+    else if (_type == REGULAR) {
+        _width = REGULAR_WIDTH - 1;
+        _height = REGULAR_HEIGHT;
+        _gunSpeed = 1000;
+        _gunType = DOUBLESHOT;
+        _hp = 50;
+    }
+    else if (_type == LAND) {
+        _width = REGULAR_WIDTH - 1;
+        _height = REGULAR_HEIGHT;
+        _gunSpeed = 800;
+        _gunType = ROCKET;
+        _hp = 25;
+    }
+    else if (_type == BOSS) {
+        _width = BOSS_WIDTH - 1;
+        _height = BOSS_HEIGHT;
+        _speed = 12;
+        _gunSpeed = 250;
+        _hp = 750;
+    }
 }
 
 int Enemy::GetEnemyType()
 {
     return _type;
+}
+
+void Enemy::BossDir()
+{
+    if (_x + _width >= COLS - 4) {
+        bossDir = false;
+    }
+    if (_x <= 4) {
+        bossDir = true;
+    }
+
+    if (bossDir) _x++;
+    else _x--;
+
+    _gunType = rand() % 2;
 }

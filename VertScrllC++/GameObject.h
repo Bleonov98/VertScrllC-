@@ -97,8 +97,6 @@ protected:
 
 
 
-
-
 class Player: public Character
 {
 public:
@@ -140,7 +138,7 @@ private:
 class Enemy : public Character
 {
 public:
-	Enemy(wd* Wdata, int x, int y, int speed, int color) : Character(wData, x, y, speed, color) {};
+	Enemy(wd* wData, int x, int y, int speed, int color) : Character(wData, x, y, speed, color) {};
 
 
 	void DrawObject() override;
@@ -160,7 +158,11 @@ public:
 
 private:
 
+	void BossDir();
+
 	int _type = SMALL, _lifes = 1;
+
+	bool bossDir = true;
 
 	char16_t smallEnemy[REGULAR_HEIGHT][SMALL_WIDTH]{
 		u"--",
@@ -189,6 +191,8 @@ private:
 		u"||   | | |   ||",
 		u"||   | | |   ||"
 	};
+
+
 
 };
 

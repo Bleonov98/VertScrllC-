@@ -160,7 +160,7 @@ private:
         {
             for (int j = 0; j < COLS; j++)
             {
-                if ((prevActiveAreaBuf[i][j] != activeAreaBuf[i][j]) && (wData.vBuf[i][j] == 0 || wData.vBuf[i][j] == u' '))
+                if ((prevActiveAreaBuf[i][j] != activeAreaBuf[i][j]) && (wData.vBuf[i][j + 1] == 0 || wData.vBuf[i][j + 1] == u' '))
                 {
                     prevActiveAreaBuf[i][j] = activeAreaBuf[i][j];
 
@@ -171,7 +171,7 @@ private:
             }
         }
 
-        if (scrollY - ROWS > 0) scrollY--;
+        if (scrollY - ROWS > 0) scrollY--; 
 
         /* if (scrollX % 120 == 0 && scrollX > 0) {
             SpawnEnemy(COLS - 10, 3 + rand() % (ROWS - 6), REGULAR);

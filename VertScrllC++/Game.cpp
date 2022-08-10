@@ -261,7 +261,7 @@ void Game::Shot(int owner, Character* character)
 					allObjectList.push_back(bullet);
 				}
 				else {
-					bullet = new Bullet(&wData, character->GetX() + character->GetWidth(), character->GetY() + character->GetHeight() + 1, 1, Red);
+					bullet = new Bullet(&wData, character->GetX() + character->GetWidth() - 2, character->GetY() + character->GetHeight() + 1, 1, Red);
 					bullet->SetOwner(owner);
 					bulletList.push_back(bullet);
 					allObjectList.push_back(bullet);
@@ -288,6 +288,7 @@ void Game::Shot(int owner, Character* character)
 			allObjectList.push_back(bullet);
 		}
 	}
+
 	//PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
 }
 
@@ -308,7 +309,6 @@ void Game::RunWorld(bool& restart)
 	player = new Player(&wData, COLS / 2, ROWS - 15, 2, BrBlue);
 	allObjectList.push_back(player);
 
-	SpawnEnemy(5, 5, SMALL);
 
 	while (worldIsRun) {
 
