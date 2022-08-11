@@ -354,6 +354,7 @@ void Enemy::SetEnemyType(int type)
         _width = SMALL_WIDTH - 1;
         _height = REGULAR_HEIGHT;
         _gunSpeed = 1500;
+        _speed = 2;
         _gunType = SHOT;
         _hp = 25;
     }

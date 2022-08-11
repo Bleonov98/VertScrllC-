@@ -104,6 +104,68 @@ void Game::DrawEndInfo(bool& restart)
 	}
 }
 
+void Game::DrawInfo()
+{
+	int _speed = 1;
+
+	if (player->GetGunSpeed() == 500) _speed = 1;
+	else if (player->GetGunSpeed() == 450) _speed = 2;
+	else if (player->GetGunSpeed() == 400) _speed = 3;
+	else if (player->GetGunSpeed() == 350) _speed = 4;
+	else if (player->GetGunSpeed() == 300) _speed = 5;
+	else if (player->GetGunSpeed() == 250) _speed = 6;
+	else if (player->GetGunSpeed() == 200) _speed = 7;
+
+	for (int i = 0; i < 4; i++)
+	{
+		SetPos(9 + i, ROWS + 5);
+		printf(CSI "0m");
+		cout << ' ';
+	}
+
+	if (player->GetHp() == 100) {
+		SetPos(5, ROWS + 5);
+		cout << "HP: ";
+		printf(CSI "42;32m");
+		cout << ' ';
+		cout << ' ';
+		cout << ' ';
+		cout << ' ';
+		printf(CSI "0m");
+	}
+	else if (player->GetHp() == 75) {
+		SetPos(5, ROWS + 5);
+		cout << "HP: ";
+		printf(CSI "43;32m");
+		cout << ' ';
+		cout << ' ';
+		cout << ' ';
+		printf(CSI "0m");
+	}
+	else if (player->GetHp() == 50) {
+		SetPos(5, ROWS + 5);
+		cout << "HP: ";
+		printf(CSI "43;32m");
+		cout << ' ';
+		cout << ' ';
+		printf(CSI "0m");
+	}
+	else if (player->GetHp() == 25) {
+		SetPos(5, ROWS + 5);
+		cout << "HP: ";
+		printf(CSI "41;32m");
+		cout << ' ';
+		printf(CSI "0m");
+	}
+
+	SetPos(5, ROWS + 2);
+	cout << "SCORE: " << score;
+	SetPos(5, ROWS + 3);
+	cout << "LIFES: " << player->GetLifes();
+	SetPos(5, ROWS + 4);
+	cout << "SPEED: " << _speed;
+}
+
 void Game::DrawChanges()
 {
 	for (int y = 0; y < ROWS; y++)
@@ -169,7 +231,7 @@ void Game::DrawChanges()
 
 void Game::SpawnEnemy(int x, int y, int type)
 {
-	enemy = new Enemy(&wData, x, y, 2, BrYellow);
+	enemy = new Enemy(&wData, x, y, 3, BrYellow);
 	enemy->SetEnemyType(type);
 	allObjectList.push_back(enemy);
 	enemyList.push_back(enemy);
@@ -194,14 +256,14 @@ void Game::DrawToMem()
 		}
 	}
 
-	//for (int i = 0; i < bonusList.size(); i++)
-	//{
-	//	if (bonusList[i]->IsObjectDelete()) {
-	//		bonusList.erase(bonusList.begin() + i);
+	for (int i = 0; i < bonusList.size(); i++)
+	{
+		if (bonusList[i]->IsObjectDelete()) {
+			bonusList.erase(bonusList.begin() + i);
 
-	//		i = -1;
-	//	}
-	//}
+			i = -1;
+		}
+	}
 
 	for (int i = 0; i < allObjectList.size(); i++)
 	{
@@ -304,11 +366,10 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(pause); }
 	);
 
-	int scrollY = ROWS * 20, scrollSpeed = 2, tick = 0;
+	int scrollY = ROWS * 20, scrollSpeed = 3, tick = 0;
 
 	player = new Player(&wData, COLS / 2, ROWS - 15, 2, BrBlue);
 	allObjectList.push_back(player);
-
 
 	while (worldIsRun) {
 
@@ -342,7 +403,7 @@ void Game::RunWorld(bool& restart)
 			if (tick % enemyList[i]->GetSpeed() == 0) {
 				enemyList[i]->MoveObject();
 
-				if (enemyList[i]->GetGunState()) {
+				if (enemyList[i]->GetGunState() && tick % 20 == 0) {
 					enemy = enemyList[i];
 					Shot(ENEMY, enemy);
 					thread reloadGun([&]
@@ -373,9 +434,9 @@ void Game::RunWorld(bool& restart)
 
 		if (tick % scrollSpeed == 0 && tick > 0) ScrollWindow(scrollY);
 
-		//DrawInfo(player);
+		DrawInfo();
 
-		Sleep(20);
+		Sleep(15);
 
 		tick++;
 	}

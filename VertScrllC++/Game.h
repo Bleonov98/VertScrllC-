@@ -21,10 +21,12 @@ private:
     vector<GameObject*> allObjectList;
     vector<Enemy*> enemyList;
     vector<Bullet*> bulletList;
+    vector<Bullet*> bonusList;
 
     Player* player;
     Bullet* bullet;
     Enemy* enemy;
+    Bonus* bonus;
 
 
     HINSTANCE hInstance;
@@ -173,19 +175,19 @@ private:
 
         if (scrollY - ROWS > 0) scrollY--; 
 
-        /* if (scrollX % 120 == 0 && scrollX > 0) {
-            SpawnEnemy(COLS - 10, 3 + rand() % (ROWS - 6), REGULAR);
+        if (scrollY % 120 == 0 && scrollY > 0) {
+            SpawnEnemy(4 + rand() % (COLS - 12), 4, REGULAR);
         }
-        if (scrollX % 50 == 0 && scrollX > 0) {
-            SpawnEnemy(COLS - 10, 3 + rand() % (ROWS - 6), SMALL);
+        if (scrollY % 50 == 0 && scrollY > 0) {
+            SpawnEnemy(4 + rand() % (COLS - 12), 4, SMALL);
         }
-        if (scrollX % 200 == 0 && scrollX > 0) {
-            SpawnEnemy(COLS - 10, ROWS - 3, LAND);
+        if (scrollY % 200 == 0 && scrollY > 0) {
+            SpawnEnemy(COLS - REGULAR_WIDTH - 1, 4, LAND);
         }
-        if (scrollX + COLS == 1020) {
-            SpawnEnemy(COLS - 10, 3 + rand() % (ROWS - 6), BOSS);
-            PlaySound(MAKEINTRESOURCE(IDR_WAVE3), NULL, SND_RESOURCE | SND_ASYNC);
-        }*/
+        if (scrollY - ROWS == 1) {
+            SpawnEnemy(COLS / 3, 4, BOSS);
+            //PlaySound(MAKEINTRESOURCE(IDR_WAVE3), NULL, SND_RESOURCE | SND_ASYNC);
+        }
     }
 
     VirtualTerminal term; // console setting
