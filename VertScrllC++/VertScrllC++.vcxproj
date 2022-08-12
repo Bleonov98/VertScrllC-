@@ -156,6 +156,13 @@
   <ItemGroup>
     <Text Include="..\VertScrlArea.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\bonus.wav" />
+    <Media Include="..\explosn.wav" />
+    <Media Include="..\fail.wav" />
+    <Media Include="..\shot.wav" />
+    <Media Include="..\win.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

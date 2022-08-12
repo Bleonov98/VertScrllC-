@@ -50,4 +50,21 @@
   <ItemGroup>
     <Text Include="..\VertScrlArea.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\shot.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\bonus.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\explosn.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\win.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\fail.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+  </ItemGroup>
 </Project>

@@ -57,10 +57,26 @@ LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// WAVE
+//
+
+IDR_WAVE1               WAVE                    "..\\shot.wav"
+
+IDR_WAVE2               WAVE                    "..\\bonus.wav"
+
+IDR_WAVE3               WAVE                    "..\\explosn.wav"
+
+IDR_WAVE4               WAVE                    "..\\win.wav"
+
+IDR_WAVE5               WAVE                    "..\\fail.wav"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // TEXT
 //
 
-IDR_TEXT1               TEXT                    "C:\\Users\\Borys\\source\\repos\\VertScrllC++\\VertScrlArea.txt"
+IDR_TEXT1               TEXT                    "..\\VertScrlArea.txt"
 
 #endif    // Ukrainian (Ukraine) resources
 /////////////////////////////////////////////////////////////////////////////

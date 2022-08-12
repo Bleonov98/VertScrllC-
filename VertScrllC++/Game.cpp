@@ -76,17 +76,19 @@ void Game::CreateWorld() {
 void Game::DrawEndInfo(bool& restart)
 {
 	if (win) {
-		SetPos(44, ROWS + 2);
+		PlaySound(MAKEINTRESOURCE(IDR_WAVE4), NULL, SND_RESOURCE | SND_ASYNC);
+		SetPos(COLS + 1, 20);
 		cout << "CONGRATULATION! YOU WIN!";
 	}
 	else {
-		SetPos(50, ROWS + 2);
+		PlaySound(MAKEINTRESOURCE(IDR_WAVE5), NULL, SND_RESOURCE | SND_ASYNC);
+		SetPos(COLS + 7, 20);
 		cout << "GAME OVER!";
 	}
 
-	SetPos(45, ROWS + 3);
+	SetPos(COLS + 1, 23);
 	cout << "PRESS ENTER TO RESTART";
-	SetPos(47, ROWS + 4);
+	SetPos(COLS + 3, 24);
 	cout << "PRESS ESC TO EXIT";
 
 	bool pressed = false;
@@ -116,17 +118,21 @@ void Game::DrawInfo()
 	else if (player->GetGunSpeed() == 250) _speed = 6;
 	else if (player->GetGunSpeed() == 200) _speed = 7;
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 8; i++)
 	{
-		SetPos(9 + i, ROWS + 5);
+		SetPos(COLS + 5 + i, 5);
 		printf(CSI "0m");
 		cout << ' ';
 	}
 
 	if (player->GetHp() == 100) {
-		SetPos(5, ROWS + 5);
+		SetPos(COLS + 1, 5);
 		cout << "HP: ";
 		printf(CSI "42;32m");
+		cout << ' ';
+		cout << ' ';
+		cout << ' ';
+		cout << ' ';
 		cout << ' ';
 		cout << ' ';
 		cout << ' ';
@@ -134,36 +140,43 @@ void Game::DrawInfo()
 		printf(CSI "0m");
 	}
 	else if (player->GetHp() == 75) {
-		SetPos(5, ROWS + 5);
+		SetPos(COLS + 1, 5);
 		cout << "HP: ";
 		printf(CSI "43;32m");
+		cout << ' ';
+		cout << ' ';
+		cout << ' ';
 		cout << ' ';
 		cout << ' ';
 		cout << ' ';
 		printf(CSI "0m");
 	}
 	else if (player->GetHp() == 50) {
-		SetPos(5, ROWS + 5);
+		SetPos(COLS + 1, 5);
 		cout << "HP: ";
 		printf(CSI "43;32m");
+		cout << ' ';
+		cout << ' ';
 		cout << ' ';
 		cout << ' ';
 		printf(CSI "0m");
 	}
 	else if (player->GetHp() == 25) {
-		SetPos(5, ROWS + 5);
+		SetPos(COLS + 1, 5);
 		cout << "HP: ";
 		printf(CSI "41;32m");
+		cout << ' ';
 		cout << ' ';
 		printf(CSI "0m");
 	}
 
-	SetPos(5, ROWS + 2);
-	cout << "SCORE: " << score;
-	SetPos(5, ROWS + 3);
+	SetPos(COLS + 1, 7);
 	cout << "LIFES: " << player->GetLifes();
-	SetPos(5, ROWS + 4);
+	SetPos(COLS + 1, 9);
 	cout << "SPEED: " << _speed;
+	SetPos(COLS + 1, 15);
+	cout << "SCORE: " << score;
+	
 }
 
 void Game::DrawChanges()
@@ -235,6 +248,17 @@ void Game::SpawnEnemy(int x, int y, int type)
 	enemy->SetEnemyType(type);
 	allObjectList.push_back(enemy);
 	enemyList.push_back(enemy);
+}
+
+void Game::SpawnBonus(Enemy* enemy, int type)
+{
+	if (type >= 3) return;
+
+	bonus = new Bonus(&wData, enemy->GetX() - 1, enemy->GetY(), 1, Yellow);
+
+	bonus->SetBonusType(type);
+	allObjectList.push_back(bonus);
+	bonusList.push_back(bonus);
 }
 
 void Game::DrawToMem()
@@ -323,7 +347,7 @@ void Game::Shot(int owner, Character* character)
 					allObjectList.push_back(bullet);
 				}
 				else {
-					bullet = new Bullet(&wData, character->GetX() + character->GetWidth() - 2, character->GetY() + character->GetHeight() + 1, 1, Red);
+					bullet = new Bullet(&wData, character->GetX() + character->GetWidth() - 1, character->GetY() + character->GetHeight() + 1, 1, Red);
 					bullet->SetOwner(owner);
 					bulletList.push_back(bullet);
 					allObjectList.push_back(bullet);
@@ -337,7 +361,12 @@ void Game::Shot(int owner, Character* character)
 			bullet = new Bullet(&wData, character->GetX() + character->GetWidth() / 2, character->GetY() - 1, 1, Red);
 			bullet->SetOwner(owner);
 			bullet->SetBulletType(character->GetGunType());
-			bullet->RocketPath(15, 10);
+			if (enemyList.empty()) {
+				bullet->RocketPath(45, 4);
+			}
+			else {
+				bullet->RocketPath(enemyList[0]->GetX() + 1, enemyList[0]->GetY() + enemyList[0]->GetHeight() / 2);
+			}
 			bulletList.push_back(bullet);
 			allObjectList.push_back(bullet);
 		}
@@ -345,13 +374,236 @@ void Game::Shot(int owner, Character* character)
 			bullet = new Bullet(&wData, character->GetX() + character->GetWidth() / 2, character->GetY() - 1, 1, Red);
 			bullet->SetOwner(owner);
 			bullet->SetBulletType(character->GetGunType());
-			bullet->RocketPath(player->GetX(), player->GetY());
+			bullet->RocketPath(player->GetX() + 1, player->GetY() + player->GetHeight());
 			bulletList.push_back(bullet);
 			allObjectList.push_back(bullet);
 		}
 	}
 
-	//PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
+	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
+}
+
+void Game::Collision()
+{
+	for (int enemy = 0; enemy < enemyList.size(); enemy++)
+	{
+
+		bool finded = false;
+
+		for (int h = 0; h < enemyList[enemy]->GetHeight(); h++)
+		{
+			for (int w = 0; w < enemyList[enemy]->GetWidth(); w++)
+			{
+
+				for (int ph = 0; ph < player->GetHeight(); ph++)
+				{
+					for (int pw = 0; pw < player->GetWidth(); pw++)
+					{
+						if ((enemyList[enemy]->GetX() + w == player->GetX() + pw) && (enemyList[enemy]->GetY() + h == player->GetY() + ph)) {
+
+							enemyList[enemy]->DeleteObject();
+
+							player->Death(worldIsRun);
+
+
+							finded = true;
+							break;
+						}
+					}
+					if (finded) break;
+				}
+				if (finded) break;
+			}
+			if (finded) break;
+		}
+
+		finded = false;
+	}
+
+	for (int bullet = 0; bullet < bulletList.size(); bullet++)
+	{
+
+		bool finded = false;
+
+		if (bulletList[bullet]->GetOwner() == PLAYER) {
+			for (int enemy = 0; enemy < enemyList.size(); enemy++)
+			{
+
+				for (int h = 0; h < enemyList[enemy]->GetHeight(); h++)
+				{
+					for (int w = 0; w < enemyList[enemy]->GetWidth(); w++)
+					{
+
+						if (bulletList[bullet]->GetX() == enemyList[enemy]->GetX() + w &&
+							bulletList[bullet]->GetY() == enemyList[enemy]->GetY() + h)
+						{
+							enemyList[enemy]->Hit(score);
+							bulletList[bullet]->DeleteObject();
+
+							SpawnBonus(enemyList[enemy], rand() % 7);
+
+							finded = true;
+
+							break;
+						}
+
+					}
+					if (finded) break;
+				}
+				if (finded) break;
+
+			}
+		}
+		else if (bulletList[bullet]->GetOwner() == ENEMY) {
+			for (int h = 0; h < player->GetHeight(); h++)
+			{
+				for (int w = 0; w < player->GetWidth(); w++)
+				{
+					if (bulletList[bullet]->GetX() == player->GetX() + w && bulletList[bullet]->GetY() == player->GetY() + h) {
+						player->Death(worldIsRun);
+
+						bulletList[bullet]->DeleteObject();
+
+						finded = true;
+						break;
+					}
+				}
+				if (finded) break;
+			}
+			if (finded) break;
+		}
+	}
+
+	for (int bonus = 0; bonus < bonusList.size(); bonus++)
+	{
+		bool finded = false;
+		for (int h = 0; h < bonusList[bonus]->GetHeight(); h++)
+		{
+			for (int w = 0; w < bonusList[bonus]->GetWidth(); w++)
+			{
+
+				for (int ph = 0; ph < player->GetHeight(); ph++)
+				{
+					for (int pw = 0; pw < player->GetWidth(); pw++)
+					{
+
+						if (bonusList[bonus]->GetX() + w == player->GetX() + pw &&
+							bonusList[bonus]->GetY() + h == player->GetY() + ph) {
+
+							bonusList[bonus]->DeleteObject();
+							score += 150;
+
+							PlaySound(MAKEINTRESOURCE(IDR_WAVE2), NULL, SND_RESOURCE | SND_ASYNC);
+
+							if (bonusList[bonus]->GetBonusType() == GUNSPEED) {
+								if (player->GetGunSpeed() > 300) {
+									player->SetGunSpeed(player->GetGunSpeed() - 100);
+
+									finded = true;
+									break;
+								}
+								else {
+									finded = true;
+									break;
+								}
+							}
+							else if (bonusList[bonus]->GetBonusType() == GUNTYPE) {
+								if (player->GetGunType() == SHOT) player->SetGunType(DOUBLESHOT);
+								else if (player->GetGunType() == DOUBLESHOT) player->SetGunType(ROCKET);
+
+								finded = true;
+								break;
+							}
+							else if (bonusList[bonus]->GetBonusType() == LIFE) {
+								player->AddLifes();
+
+								finded = true;
+								break;
+							}
+
+						}
+					}
+					if (finded) break;
+				}
+				if (finded) break;
+			}
+			if (finded) break;
+		}
+		finded = false;
+	}
+}
+
+void Game::WallCollision()
+{
+	for (int bullet = 0; bullet < bulletList.size(); bullet++)
+	{
+		if (wData.grid[bulletList[bullet]->GetY()][bulletList[bullet]->GetX()] == -1 ||
+			wData.grid[bulletList[bullet]->GetY() - 1][bulletList[bullet]->GetX()] == -1 ||
+			wData.grid[bulletList[bullet]->GetY() + 1][bulletList[bullet]->GetX()] == -1) {
+			bulletList[bullet]->DeleteObject();
+
+			break;
+		}
+	}
+	for (int enemy = 0; enemy < enemyList.size(); enemy++)
+	{
+		bool finded = false;
+		for (int eh = 0; eh < enemyList[enemy]->GetHeight() - 1; eh++)
+		{
+			for (int ew = 0; ew < enemyList[enemy]->GetWidth(); ew++)
+			{
+				if (wData.grid[enemyList[enemy]->GetY() + eh][enemyList[enemy]->GetX() + ew] == -1) {
+					enemyList[enemy]->DeleteObject();
+
+					finded = true;
+
+					break;
+				}
+			}
+			if (finded) break;
+		}
+		finded = false;
+	}
+	for (int bonus = 0; bonus < bonusList.size(); bonus++)
+	{
+		bool finded = false;
+		for (int bh = 0; bh < bonusList[bonus]->GetHeight() - 1; bh++)
+		{
+			for (int bw = 0; bw < bonusList[bonus]->GetWidth(); bw++)
+			{
+				if (wData.grid[bonusList[bonus]->GetY() + bh][bonusList[bonus]->GetX() + bw] == -1) {
+					bonusList[bonus]->DeleteObject();
+
+					finded = true;
+
+					break;
+				}
+			}
+			if (finded) break;
+		}
+		finded = false;
+	}
+
+	for (int ph = 0; ph < player->GetHeight() - 1; ph++)
+	{
+		bool finded = false;
+		for (int pw = 0; pw < player->GetWidth(); pw++)
+		{
+			if (wData.grid[player->GetY() + ph][player->GetX() + pw] == -1) {
+				player->EraseObject();
+
+				player->Death(worldIsRun);
+
+				player->SetX(COLS / 2);
+				player->SetY(ROWS - 4);
+
+				finded = true;
+
+				break;
+			}
+		}
+		if (finded) break;
+	}
 }
 
 void Game::RunWorld(bool& restart)
@@ -366,7 +618,7 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(pause); }
 	);
 
-	int scrollY = ROWS * 20, scrollSpeed = 3, tick = 0;
+	int scrollY = ROWS * 20, scrollSpeed = 2, tick = 0;
 
 	player = new Player(&wData, COLS / 2, ROWS - 15, 2, BrBlue);
 	allObjectList.push_back(player);
@@ -403,7 +655,7 @@ void Game::RunWorld(bool& restart)
 			if (tick % enemyList[i]->GetSpeed() == 0) {
 				enemyList[i]->MoveObject();
 
-				if (enemyList[i]->GetGunState() && tick % 20 == 0) {
+				if (enemyList[i]->GetGunState() && tick % 10 == 0) {
 					enemy = enemyList[i];
 					Shot(ENEMY, enemy);
 					thread reloadGun([&]
@@ -422,11 +674,16 @@ void Game::RunWorld(bool& restart)
 			}
 		}
 		
-		
+		for (int i = 0; i < bonusList.size(); i++)
+		{
+			if (tick % bonusList[i]->GetSpeed() == 0) {
+				bonusList[i]->MoveObject();
+			}
+		}
 
-		//Collision(player);
+		Collision();
 
-		//WallCollision(player);
+		WallCollision();
 
 		DrawToMem();
 
@@ -439,6 +696,11 @@ void Game::RunWorld(bool& restart)
 		Sleep(15);
 
 		tick++;
+
+		if (scrollY - ROWS == 0 && enemyList.empty()) {
+			worldIsRun = false;
+			win = true;
+		}
 	}
 
 	DrawEndInfo(restart);

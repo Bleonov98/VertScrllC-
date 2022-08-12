@@ -135,7 +135,12 @@ void Player::Death(bool& worldIsRun)
         _lifes--;
         if (_lifes == 0) {
             worldIsRun = false;
+            PlaySound(MAKEINTRESOURCE(IDR_WAVE3), NULL, SND_RESOURCE | SND_ASYNC);
+            return;
         }
+        _hp = 100;
+        _gunType = SHOT;
+        _gunSpeed = 500;
     }
 }
 
@@ -144,7 +149,7 @@ int Player::GetLifes()
     return _lifes;
 }
 
-void Player::AddLife()
+void Player::AddLifes()
 {
     if (_hp == 100) {
         _lifes++;
@@ -335,13 +340,19 @@ void Enemy::MoveObject()
     }
 }
 
-void Enemy::Hit()
+void Enemy::Hit(int& score)
 {
     _hp -= 25;
     if (_hp == 0) {
         _lifes--;
         if (_lifes == 0) {
+            PlaySound(MAKEINTRESOURCE(IDR_WAVE3), NULL, SND_RESOURCE | SND_ASYNC);
             DeleteObject();
+
+            if (_type == SMALL) score += 50;
+            if (_type == REGULAR) score += 100;
+            if (_type == LAND) score += 250;
+            if (_type == BOSS) score += 1000;
         }
     }
 }
@@ -368,7 +379,7 @@ void Enemy::SetEnemyType(int type)
     else if (_type == LAND) {
         _width = REGULAR_WIDTH - 1;
         _height = REGULAR_HEIGHT;
-        _gunSpeed = 800;
+        _gunSpeed = 400;
         _gunType = ROCKET;
         _hp = 25;
     }
@@ -376,7 +387,7 @@ void Enemy::SetEnemyType(int type)
         _width = BOSS_WIDTH - 1;
         _height = BOSS_HEIGHT;
         _speed = 12;
-        _gunSpeed = 250;
+        _gunSpeed = 300;
         _hp = 750;
     }
 }
@@ -399,4 +410,73 @@ void Enemy::BossDir()
     else _x--;
 
     _gunType = rand() % 2;
+}
+
+// ------------------- BONUS -----------------
+
+void Bonus::DrawObject()
+{
+    if (_type == GUNSPEED) {
+        for (int h = 0; h < _height; h++)
+        {
+            for (int w = 0; w < _width; w++)
+            {
+                wData->vBuf[_y + h][_x + w] = gunspeedSprite[h][w] | (_color << 8);
+            }
+        }
+    }
+    else if (_type == GUNTYPE) {
+        for (int h = 0; h < _height; h++)
+        {
+            for (int w = 0; w < _width; w++)
+            {
+                wData->vBuf[_y + h][_x + w] = guntypeSprite[h][w] | (_color << 8);
+            }
+        }
+    }
+    else if (_type == LIFE) {
+        for (int h = 0; h < _height; h++)
+        {
+            for (int w = 0; w < _width; w++)
+            {
+                wData->vBuf[_y + h][_x + w] = lifeBonusSprite[h][w] | (_color << 8);
+            }
+        }
+    }
+    
+}
+
+void Bonus::EraseObject()
+{
+    for (int h = 0; h < _height; h++)
+    {
+        for (int w = 0; w < _width; w++)
+        {
+            wData->vBuf[_y + h][_x + w] = u' ';
+        }
+    }
+}
+
+void Bonus::MoveObject()
+{
+    EraseObject();
+
+    _y++;
+    if (_y + _height >= ROWS - 2) {
+        DeleteObject();
+    }
+}
+
+void Bonus::SetBonusType(int type)
+{
+    _type = type;
+
+    if (_type == GUNSPEED) _color = BrPurple;
+    else if (_type == GUNTYPE) _color = Yellow;
+    else if (_type == LIFE) _color = Green;
+}
+
+int Bonus::GetBonusType()
+{
+    return _type;
 }

@@ -104,7 +104,8 @@ public:
 		_width = REGULAR_WIDTH - 1;
 		_height = REGULAR_HEIGHT;
 		_gunSpeed = 500;
-		_gunType = ROCKET;
+		_gunType = SHOT;
+		_lifes = 3;
 	};
 
 
@@ -120,7 +121,7 @@ public:
 
 	int GetLifes();
 
-	void AddLife();
+	void AddLifes();
 
 private:
 
@@ -148,7 +149,7 @@ public:
 	void MoveObject() override;
 
 
-	void Hit();
+	void Hit(int& score);
 
 
 	void SetEnemyType(int type);
@@ -170,9 +171,9 @@ private:
 		u"##"
 	};
 	char16_t regularEnemy[REGULAR_HEIGHT][REGULAR_WIDTH]{
-		u"|^|",
-		u"|-|",
-		u"# #"
+		u"|^^|",
+		u"|--|",
+		u"#  #"
 	};
 	char16_t landEnemy[REGULAR_HEIGHT][REGULAR_WIDTH]{
 		u"   #",

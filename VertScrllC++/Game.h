@@ -21,7 +21,7 @@ private:
     vector<GameObject*> allObjectList;
     vector<Enemy*> enemyList;
     vector<Bullet*> bulletList;
-    vector<Bullet*> bonusList;
+    vector<Bonus*> bonusList;
 
     Player* player;
     Bullet* bullet;
@@ -42,7 +42,7 @@ private:
 
         HWND hWindowConsole = GetForegroundWindow();
 
-        int Width = 91, Height = 56, err = 30;
+        int Width = 114, Height = 56, err = 30;
 
         bool Terminal() {
 
@@ -153,6 +153,7 @@ private:
 
                 if (activeAreaBuf[activeY][j] == '#') {
                     wData.grid[activeY][j] = -1;
+                    wData.grid[activeY][j + 1] = -1;
                 }
             }
             activeY--;
@@ -181,12 +182,11 @@ private:
         if (scrollY % 50 == 0 && scrollY > 0) {
             SpawnEnemy(4 + rand() % (COLS - 12), 4, SMALL);
         }
-        if (scrollY % 200 == 0 && scrollY > 0) {
+        if (scrollY % 160 == 0 && scrollY > 0) {
             SpawnEnemy(COLS - REGULAR_WIDTH - 1, 4, LAND);
         }
         if (scrollY - ROWS == 1) {
             SpawnEnemy(COLS / 3, 4, BOSS);
-            //PlaySound(MAKEINTRESOURCE(IDR_WAVE3), NULL, SND_RESOURCE | SND_ASYNC);
         }
     }
 
@@ -212,13 +212,13 @@ protected:
 
     void SpawnEnemy(int x, int y, int type);
 
-    //void SpawnBonus(Enemy* enemy, int type);
+    void SpawnBonus(Enemy* enemy, int type);
 
     void Shot(int owner, Character* character);
 
-    //void Collision(Player* player);
+    void Collision();
 
-    //void WallCollision(Player* player);
+    void WallCollision();
 
 public:
 
