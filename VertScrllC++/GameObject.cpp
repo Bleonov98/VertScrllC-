@@ -105,6 +105,7 @@ void Player::DrawObject()
             wData->vBuf[_y + h][_x + w] = playerSprite[h][w] | (_color << 8);
         }
     }
+    _color = BrBlue;
 }
 
 void Player::EraseObject()
@@ -131,6 +132,7 @@ void Player::MoveObject()
 void Player::Death(bool& worldIsRun)
 {
     _hp -= 25;
+    _color = BrPurple;
     if (_hp == 0) {
         _lifes--;
         if (_lifes == 0) {
@@ -312,6 +314,7 @@ void Enemy::DrawObject()
             }
         }
     }
+    _color = BrYellow;
 }
 
 void Enemy::EraseObject()
@@ -343,6 +346,7 @@ void Enemy::MoveObject()
 void Enemy::Hit(int& score)
 {
     _hp -= 25;
+    _color = BrPurple;
     if (_hp == 0) {
         _lifes--;
         if (_lifes == 0) {
@@ -409,7 +413,7 @@ void Enemy::BossDir()
     if (bossDir) _x++;
     else _x--;
 
-    _gunType = rand() % 2;
+    _gunType = rand() % 3;
 }
 
 // ------------------- BONUS -----------------

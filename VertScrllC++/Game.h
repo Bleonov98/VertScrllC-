@@ -182,7 +182,7 @@ private:
         if (scrollY % 50 == 0 && scrollY > 0) {
             SpawnEnemy(4 + rand() % (COLS - 12), 4, SMALL);
         }
-        if (scrollY % 160 == 0 && scrollY > 0) {
+        if (scrollY % 150 == 0 && scrollY > 0) {
             SpawnEnemy(COLS - REGULAR_WIDTH - 1, 4, LAND);
         }
         if (scrollY - ROWS == 1) {
