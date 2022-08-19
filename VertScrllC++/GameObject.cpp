@@ -246,6 +246,8 @@ void Bullet::RocketPath(int x, int y)
     int dirX = (X < x) ? 1 : -1;
     int dirY = (Y < y) ? 1 : -1;
 
+    path.insert(path.begin(), make_pair(X, Y));
+
     while (X != x && Y != y)
     {
         const int error2 = error * 2;

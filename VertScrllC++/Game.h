@@ -176,10 +176,10 @@ private:
 
         if (scrollY - ROWS > 0) scrollY--; 
 
-        if (scrollY % 120 == 0 && scrollY > 0) {
-            SpawnEnemy(4 + rand() % (COLS - 12), 4, REGULAR);
+        if (scrollY % 150 == 0 && scrollY > 0) {
+            SpawnEnemy(12 + rand() % (COLS - 24), 4, REGULAR);
         }
-        if (scrollY % 50 == 0 && scrollY > 0) {
+        if (scrollY % 60 == 0 && scrollY > 0) {
             SpawnEnemy(4 + rand() % (COLS - 12), 4, SMALL);
         }
         if (scrollY % 150 == 0 && scrollY > 0) {
