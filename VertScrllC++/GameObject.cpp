@@ -124,9 +124,9 @@ void Player::MoveObject()
     EraseObject();
 
     if (GetAsyncKeyState(VK_UP) && _y > 4) _y--;
-    else if (GetAsyncKeyState(VK_DOWN) && _y < ROWS - 4) _y++;
-    else if (GetAsyncKeyState(VK_RIGHT) && _x < COLS - 6) _x++;
-    else if (GetAsyncKeyState(VK_LEFT) && _x > 2) _x--;
+    if (GetAsyncKeyState(VK_DOWN) && _y < ROWS - 4) _y++;
+    if (GetAsyncKeyState(VK_RIGHT) && _x < COLS - 6) _x++;
+    if (GetAsyncKeyState(VK_LEFT) && _x > 2) _x--;
 }
 
 void Player::Death(bool& worldIsRun)
@@ -369,7 +369,6 @@ void Enemy::SetEnemyType(int type)
         _width = SMALL_WIDTH - 1;
         _height = REGULAR_HEIGHT;
         _gunSpeed = 1500;
-        _speed = 2;
         _gunType = SHOT;
         _hp = 25;
     }
@@ -385,7 +384,7 @@ void Enemy::SetEnemyType(int type)
         _height = REGULAR_HEIGHT;
         _gunSpeed = 400;
         _gunType = ROCKET;
-        _speed = 2;
+        _speed = 5;
         _hp = 25;
     }
     else if (_type == BOSS) {

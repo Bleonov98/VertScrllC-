@@ -253,7 +253,7 @@ void Game::DrawChanges()
 
 void Game::SpawnEnemy(int x, int y, int type)
 {
-	enemy = new Enemy(&wData, x, y, 3, BrYellow);
+	enemy = new Enemy(&wData, x, y, 2, BrYellow);
 	enemy->SetEnemyType(type);
 	allObjectList.push_back(enemy);
 	enemyList.push_back(enemy);
@@ -627,7 +627,7 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(pause); }
 	);
 
-	int scrollY = ROWS * 20, scrollSpeed = 2, tick = 0;
+	int scrollY = ROWS * 20, scrollSpeed = 5, tick = 0;
 
 	player = new Player(&wData, COLS / 2, ROWS - 15, 2, BrBlue);
 	allObjectList.push_back(player);
