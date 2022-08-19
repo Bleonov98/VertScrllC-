@@ -365,7 +365,7 @@ void Game::Shot(int owner, Character* character)
 				bullet->RocketPath(45, 4);
 			}
 			else {
-				bullet->RocketPath(enemyList[0]->GetX() + 1, enemyList[0]->GetY() + enemyList[0]->GetHeight() / 2);
+				bullet->RocketPath(enemyList[0]->GetX() + 1, enemyList[0]->GetY() + 1);
 			}
 			bulletList.push_back(bullet);
 			allObjectList.push_back(bullet);

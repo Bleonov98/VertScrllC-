@@ -385,6 +385,7 @@ void Enemy::SetEnemyType(int type)
         _height = REGULAR_HEIGHT;
         _gunSpeed = 400;
         _gunType = ROCKET;
+        _speed = 2;
         _hp = 25;
     }
     else if (_type == BOSS) {
