@@ -177,6 +177,15 @@ void Game::DrawInfo()
 	SetPos(COLS + 1, 15);
 	cout << "SCORE: " << score;
 	
+	if (!enemyList.empty() && enemyList[0]->GetEnemyType() == BOSS) {
+		SetPos(COLS + 4, 32);
+		cout << "    ";
+		SetPos(COLS + 10, 30);
+		cout << "BOSS";
+		SetPos(COLS + 1, 32); 
+		cout << "HP: " << enemyList[0]->GetHp();
+	}
+
 }
 
 void Game::DrawChanges()
@@ -374,7 +383,7 @@ void Game::Shot(int owner, Character* character)
 			bullet = new Bullet(&wData, character->GetX() + character->GetWidth() / 2, character->GetY() - 1, 1, Red);
 			bullet->SetOwner(owner);
 			bullet->SetBulletType(character->GetGunType());
-			bullet->RocketPath(player->GetX() + 1, player->GetY() + player->GetHeight());
+			bullet->RocketPath(player->GetX() + 1, player->GetY() + player->GetHeight() - 1);
 			bulletList.push_back(bullet);
 			allObjectList.push_back(bullet);
 		}

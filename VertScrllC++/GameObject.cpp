@@ -392,7 +392,7 @@ void Enemy::SetEnemyType(int type)
         _width = BOSS_WIDTH - 1;
         _height = BOSS_HEIGHT;
         _speed = 12;
-        _gunSpeed = 300;
+        _gunSpeed = 400;
         _hp = 750;
     }
 }
